@@ -1,13 +1,17 @@
+/*
+ * Copyright (c) 2021. Developed by dDev Tech. Website: https://www.retopall.com/
+ */
+
 package AFDTest;
 
 
-import LexicAnalyzer.AFD.*;
+import LexicAnalyzer.FDA.*;
 
 import java.util.List;
 
 public class AFDTest {
     public static void main(String[]args){
-        AFD<Character> afd = new AFD<Character>() {
+        FDA<Character> FDA = new FDA<Character>() {
 
             @Override
             public void onReadSequence(List<Character> completeSequence, State<Character> finalNode, int statusCode) {
@@ -27,21 +31,21 @@ public class AFDTest {
 
         root.addTransition('$', stateDollar);
 
-        stateDollar.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric);
-        stateDollar.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric);
+        stateDollar.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,false);
+        stateDollar.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,false);
 
-        stateLetterNumeric.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric);
-        stateLetterNumeric.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric);
+        stateLetterNumeric.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,false);
+        stateLetterNumeric.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,false);
 
         stateLetterNumeric.addTransition('\\' , stateDelimiter);
-        stateDelimiter.setFinal(2);
+        stateDelimiter.setFinal();
 
 
-        afd.setRoot(root);
+        FDA.setRoot(root);
         String s= "$$a222dddd\\";
         System.out.println(s);
-        afd.setDebug(false);
-        System.out.println("Output: "+afd.execute(AFDTest.toCharacterArray(s)));
+        FDA.setDebug(false);
+        System.out.println("Output: "+ FDA.execute(AFDTest.toCharacterArray(s)));
 
     }
     public static Character[] toCharacterArray(String text){

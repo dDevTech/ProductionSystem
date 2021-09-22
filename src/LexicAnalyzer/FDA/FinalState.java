@@ -1,4 +1,8 @@
-package LexicAnalyzer.AFD;
+/*
+ * Copyright (c) 2021. Developed by dDev Tech. Website: https://www.retopall.com/
+ */
+
+package LexicAnalyzer.FDA;
 
 
 import java.util.List;
@@ -6,17 +10,28 @@ import java.util.Queue;
 
 public class FinalState<T> {
     private State<T> node;
-    private  List<T> sequence;
+    private  List<T> transitedSequence;
     private  Queue<T> remainingSequence;
     private int statusCode = -1;
+
     private boolean endedSequence = false;
-    public FinalState(State<T> node, List<T> sequence, Queue<T>remainingSequence,int statusCode,boolean endedSequence) {
+    public FinalState(State<T> node, List<T> transitedSequence, Queue<T>remainingSequence,int statusCode,boolean endedSequence) {
         this.node = node;
-        this.sequence = sequence;
+        this.transitedSequence = transitedSequence;
         this.remainingSequence = remainingSequence;
         this.statusCode = statusCode;
+
         this.endedSequence = endedSequence;
     }
+
+    public List<T> getTransitedSequence() {
+        return transitedSequence;
+    }
+
+    public void setTransitedSequence(List<T> transitedSequence) {
+        this.transitedSequence = transitedSequence;
+    }
+
 
     public State<T> getNode() {
         return node;
@@ -27,11 +42,11 @@ public class FinalState<T> {
     }
 
     public  List<T> getSequence() {
-        return sequence;
+        return transitedSequence;
     }
 
     public void setSequence( List<T>  sequence) {
-        this.sequence = sequence;
+        this.transitedSequence = sequence;
     }
 
 

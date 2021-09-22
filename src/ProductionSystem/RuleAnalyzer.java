@@ -1,9 +1,14 @@
+/*
+ * Copyright (c) 2021. Developed by dDev Tech. Website: https://www.retopall.com/
+ */
+
 package ProductionSystem;
 
 
-import LexicAnalyzer.AFD.AFD;
-import LexicAnalyzer.AFD.SemanticAction;
-import LexicAnalyzer.AFD.State;
+import LexicAnalyzer.FDA.FDA;
+import LexicAnalyzer.FDA.SemanticAction;
+import LexicAnalyzer.FDA.State;
+import LexicAnalyzer.FDA.StateOperationCode;
 import LexicAnalyzer.Tokenizer.SymbolTable;
 import LexicAnalyzer.Tokenizer.Tokenizer;
 
@@ -12,12 +17,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RuleAnalyzer {
-    private static AFD<Character>afd;
+    private static FDA<Character> FDA;
     private static Tokenizer<String>tokenizer;
     private static SymbolTable variables;
     private static SymbolTable constants;
     public static void setupAnalyzer(){
-        afd = new AFD<>() {
+        FDA = new FDA<>() {
             @Override
             public void onReadSequence(List<Character> completeSequence, State<Character> finalNode, int statusCode) {
                 System.out.println(completeSequence+"  Status code: "+statusCode);
@@ -29,18 +34,18 @@ public class RuleAnalyzer {
         tokenizer = new Tokenizer<>();
 
         State<Character> base = new State<>("root");
-        base.addTransitionFunction(RuleAnalyzer::isWhiteSpace,base);
+        base.addTransitionFunction(RuleAnalyzer::isOtherCharacter,base,false);
         //Variables
         State<Character> dollar = new State<>("dollar");
         State<Character> letter1 = new State<>("letter-variable");
         State<Character> otherCharacter1 = new State<>("o.c.1");
 
         base.addTransition('$',dollar);
-        dollar.addTransitionFunction(RuleAnalyzer::isLetter,letter1);
-        letter1.addTransitionFunction(RuleAnalyzer::isLetter,letter1);
-        letter1.addTransitionFunction(RuleAnalyzer::isDigit,letter1);
-        letter1.addTransitionFunction(RuleAnalyzer::isWhiteSpace,otherCharacter1);
-        otherCharacter1.setFinal(StateCodes.VARIABLE.ordinal());
+        dollar.addTransitionFunction(RuleAnalyzer::isLetter,letter1,false);
+        letter1.addTransitionFunction(RuleAnalyzer::isLetter,letter1,false);
+        letter1.addTransitionFunction(RuleAnalyzer::isDigit,letter1,false);
+        letter1.addTransitionFunction(RuleAnalyzer::isOtherCharacter,otherCharacter1,true);
+        otherCharacter1.setFinal();
         otherCharacter1.addSemanticAction(new SemanticAction<Character>() {
             @Override
             public void onAction(List<Character> sequence, State<Character> state) {
@@ -63,11 +68,11 @@ public class RuleAnalyzer {
             }
         });
 
-        base.addTransitionFunction(RuleAnalyzer::isLetter,letter2);
-        letter2.addTransitionFunction(RuleAnalyzer::isLetter,letter2);
-        letter2.addTransitionFunction(RuleAnalyzer::isDigit,letter2);
-        letter2.addTransitionFunction(RuleAnalyzer::isWhiteSpace,otherCharacter2);
-        otherCharacter2.setFinal(StateCodes.CONSTANT.ordinal());
+        base.addTransitionFunction(RuleAnalyzer::isLetter,letter2,false);
+        letter2.addTransitionFunction(RuleAnalyzer::isLetter,letter2,false);
+        letter2.addTransitionFunction(RuleAnalyzer::isDigit,letter2,false);
+        letter2.addTransitionFunction(RuleAnalyzer::isOtherCharacter,otherCharacter2,true);
+        otherCharacter2.setFinal();
 
         //Consequence
         State<Character> consequence1 = new State<>("-");
@@ -81,7 +86,7 @@ public class RuleAnalyzer {
 
         base.addTransition('-',consequence1);
         consequence1.addTransition('>',consequence2);
-        consequence2.setFinal(StateCodes.CONSEQUENCE.ordinal());
+        consequence2.setFinal();
 
 
         //AND
@@ -93,7 +98,7 @@ public class RuleAnalyzer {
             }
         });
         base.addTransition('^',and);
-        and.setFinal(StateCodes.AND.ordinal());
+        and.setFinal();
 
         //NOT
         State<Character> not = new State<>("~");
@@ -104,9 +109,14 @@ public class RuleAnalyzer {
             }
         });
         base.addTransition('~',not);
-        not.setFinal(StateCodes.NOT.ordinal());
+        not.setFinal();
 
-        afd.setRoot(base);
+        //End rule
+        State<Character> end = new State<>(";");
+        base.addTransition(';',end);
+        end.setFinal();
+
+        FDA.setRoot(base);
     }
     public static Character[] toCharacterArray(String text){
         return  text.chars().mapToObj(c -> (char) c).toArray(Character[]::new);
@@ -118,21 +128,25 @@ public class RuleAnalyzer {
     public static boolean isLetter(Character character){
         return(Character.isLetter(character));
     }
-    public static boolean isWhiteSpace(Character character){
+    public static boolean isOtherCharacter(Character character){
         return !(Character.isLetter(character)||Character.isDigit(character));
     }
 
-    private static int interpret(String ruleElement){
-        return afd.execute(toCharacterArray(ruleElement+" " ));//importante añadir espacio por si hayuna variable al final
+    private static int[] interpret(String ruleElement){
+        return FDA.execute(toCharacterArray(ruleElement));//importante añadir espacio por si hayuna variable al final
     }
     public static void processRule(String rule){
-        interpret(rule);
+        System.out.println(rule);
+        int[] status = interpret(rule);
+        StateOperationCode op =  StateOperationCode.values()[status[0]];
+        System.err.println("In case of FAIL position: "+rule.charAt(status[1])+"("+status[1]+")");
+        System.err.println(op.toString());
         System.out.println(variables);
         System.out.println(constants);
         System.out.println(tokenizer.toString());
     }
     public static void setDebug(boolean debug){
-        afd.setDebug(debug);
+        FDA.setDebug(debug);
     }
     private static void setToken(int value){
         tokenizer.addToken(value,null);
