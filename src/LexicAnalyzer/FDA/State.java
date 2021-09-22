@@ -84,18 +84,18 @@ public class State<T> {
                 if(debug){
                     System.out.println("Valid sequence recognized");
                 }
-                return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(),true);
+                return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(),true,sequence.size()+1);
             }else{//error ya que no hay mas posibles elementos a leer
                 if(debug){
                     System.err.println("Reached final of sequence. Not gone to final transition");
                 }
             }
-            return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.NOT_REACH_FINAL_STATE_END_OF_SEQUENCE.ordinal(), true);
+            return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.NOT_REACH_FINAL_STATE_END_OF_SEQUENCE.ordinal(), true,sequence.size()+1);
         }else if(isFinal){//vamos al siguiente
             if(debug){
                 System.out.print("Final state not finished sequence ");
             }
-            return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(), false);
+            return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(), false,sequence.size()+1);
         }
 
         //Buscamos la posible transicion
@@ -127,7 +127,7 @@ public class State<T> {
                 System.err.println("Not available transition. Not recognized by LexicAnalyzer.AFD");
             }
 
-            return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.NOT_TRANSITION_AVAILABLE.ordinal(),true);
+            return new FinalState<T>(this,transitedSequence,sequence,StateOperationCode.NOT_TRANSITION_AVAILABLE.ordinal(),true,sequence.size());
         }
 
         return stateFound.checkTransitions(sequence,debug,transitedSequence);

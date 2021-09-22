@@ -34,7 +34,7 @@ public class RuleAnalyzer {
         tokenizer = new Tokenizer<>();
 
         State<Character> base = new State<>("root");
-        base.addTransitionFunction(RuleAnalyzer::isOtherCharacter,base,false);
+        base.addTransitionFunction(RuleAnalyzer::isWhiteSpace,base,false);
         //Variables
         State<Character> dollar = new State<>("dollar");
         State<Character> letter1 = new State<>("letter-variable");
@@ -131,6 +131,9 @@ public class RuleAnalyzer {
     public static boolean isOtherCharacter(Character character){
         return !(Character.isLetter(character)||Character.isDigit(character));
     }
+    public static boolean isWhiteSpace(Character character){
+        return Character.isWhitespace(character);
+    }
 
     private static int[] interpret(String ruleElement){
         return FDA.execute(toCharacterArray(ruleElement));//importante añadir espacio por si hayuna variable al final
@@ -139,8 +142,11 @@ public class RuleAnalyzer {
         System.out.println(rule);
         int[] status = interpret(rule);
         StateOperationCode op =  StateOperationCode.values()[status[0]];
-        System.err.println("In case of FAIL position: "+rule.charAt(status[1])+"("+status[1]+")");
+
         System.err.println(op.toString());
+        if(op != StateOperationCode.SUCCESS){
+            System.err.println("FAIL in position "+ status[1]+" with character '"+rule.charAt(status[1])+"'");
+        }
         System.out.println(variables);
         System.out.println(constants);
         System.out.println(tokenizer.toString());

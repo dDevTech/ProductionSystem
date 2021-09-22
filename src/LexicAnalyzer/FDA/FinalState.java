@@ -15,13 +15,16 @@ public class FinalState<T> {
     private int statusCode = -1;
 
     private boolean endedSequence = false;
-    public FinalState(State<T> node, List<T> transitedSequence, Queue<T>remainingSequence,int statusCode,boolean endedSequence) {
+    private int sizeOfQueueWhenFinished;
+
+    public FinalState(State<T> node, List<T> transitedSequence, Queue<T>remainingSequence,int statusCode,boolean endedSequence,int sizeOfQueueWhenFinished) {
         this.node = node;
         this.transitedSequence = transitedSequence;
         this.remainingSequence = remainingSequence;
         this.statusCode = statusCode;
 
         this.endedSequence = endedSequence;
+        this.sizeOfQueueWhenFinished = sizeOfQueueWhenFinished;
     }
 
     public List<T> getTransitedSequence() {
@@ -32,6 +35,13 @@ public class FinalState<T> {
         this.transitedSequence = transitedSequence;
     }
 
+    public int getSizeOfQueueWhenFinished() {
+        return sizeOfQueueWhenFinished;
+    }
+
+    public void setSizeOfQueueWhenFinished(int sizeOfQueueWhenFinished) {
+        this.sizeOfQueueWhenFinished = sizeOfQueueWhenFinished;
+    }
 
     public State<T> getNode() {
         return node;

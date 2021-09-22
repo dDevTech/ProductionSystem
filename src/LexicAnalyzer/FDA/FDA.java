@@ -26,7 +26,7 @@ public abstract class FDA<T> {
             return checkSequence(finalState.getRemainingSequence());
         }
 
-        return new int[]{finalState.getStatusCode(),sequence.size()};
+        return new int[]{finalState.getStatusCode(),finalState.getSizeOfQueueWhenFinished()};
     }
 
     /**
@@ -38,6 +38,7 @@ public abstract class FDA<T> {
         initialSequenceSize = sequence.length;
         Queue<T> queue = new LinkedList<>(Arrays.asList(sequence));
         int[]status = checkSequence(queue);
+        status[1]=initialSequenceSize-status[1];
         return status;
 
     }
