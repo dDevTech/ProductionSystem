@@ -22,14 +22,14 @@ public abstract class FDA<T> {
         if(root == null){
             throw new RuntimeException("Root mustn't be null");
         }
-        SequenceDetection<T> sequenceDetection = root.checkTransitions(sequence,debug, new ArrayList<>());
-        Console.print(Console.ANSI_CYAN+sequenceDetection.getSequence().toString()+"\n");
-        onReadSequence(sequenceDetection.getSequence(), sequenceDetection.getNode(), sequenceDetection.getStatusCode());
-        if(!sequenceDetection.isEndedSequence()&& sequenceDetection.getStatusCode()==StateOperationCode.SUCCESS.ordinal()){
-            return checkSequence(sequenceDetection.getRemainingSequence());
+        SequenceData<T> sequenceData = root.checkTransitions(sequence,debug, new ArrayList<>());
+        Console.print(Console.ANSI_CYAN+ sequenceData.getSequence().toString()+"\n");
+        onReadSequence(sequenceData.getSequence(), sequenceData.getNode(), sequenceData.getStatusCode());
+        if(!sequenceData.isEndedSequence()&& sequenceData.getStatusCode()==StateOperationCode.SUCCESS.ordinal()){
+            return checkSequence(sequenceData.getRemainingSequence());
         }
-        Console.printlnInfo("FDA",Console.ANSI_PURPLE+"STATUS CODE: "+sequenceDetection.getStatusCode());
-        return new int[]{sequenceDetection.getStatusCode(), sequenceDetection.getSizeOfQueueWhenFinished()};
+        Console.printlnInfo("FDA",Console.ANSI_PURPLE+"STATUS CODE: "+ sequenceData.getStatusCode());
+        return new int[]{sequenceData.getStatusCode(), sequenceData.getSizeOfQueueWhenFinished()};
     }
 
     /**

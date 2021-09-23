@@ -143,7 +143,7 @@ public class RuleAnalyzer {
     }
     public static void processRule(String rule){
         if(debug) Console.printlnInfo("RULE",rule);
-        Console.printlnInfo("ALGORITHM","Interpreting rule");
+        Console.printlnInfo("FDA","Interpreting rule");
         int[] status = interpret(rule);
         StateOperationCode op =  StateOperationCode.values()[status[0]];
 
@@ -151,7 +151,7 @@ public class RuleAnalyzer {
         if(op != StateOperationCode.SUCCESS){
             Console.printlnInfo("STATUS",Console.ANSI_RED+"FAIL in position "+ status[1]+" with character '"+rule.charAt(status[1])+"'");
         }else{
-            Console.printlnInfo("STATUS",Console.ANSI_YELLOW+op);
+            Console.printlnInfo("STATUS",Console.ANSI_GREEN+op);
         }
         Console.printlnInfo("VARIABLE",variables.toString());
         Console.printlnInfo("CONSTANTS",constants.toString());

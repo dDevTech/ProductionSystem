@@ -76,7 +76,7 @@ public class State<T> {
         transitionFunctions.put(new TransitionFunction<T>(transitionFunction,read,write),toTransit);
 
     }
-    protected SequenceDetection checkTransitions(Queue<T> sequence, boolean debug, List<T>transitedSequence){
+    protected SequenceData checkTransitions(Queue<T> sequence, boolean debug, List<T>transitedSequence){
         if(transitedSequence.size()>0){
             callActions(transitedSequence);
         }
@@ -87,20 +87,20 @@ public class State<T> {
         if(sequence.size()<=0){//ya no hay mas elementos posibles
             if(isFinal){//estado final -> es valido
                 if(debug){
-                    Console.print(Console.ANSI_RED+"Valid sequence recognized. Input sequence finished ");
+                    Console.print(Console.ANSI_GREEN+"Valid sequence recognized. Input sequence finished ");
                 }
-                return new SequenceDetection<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(),true,sequence.size()+1);
+                return new SequenceData<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(),true,sequence.size()+1);
             }else{//error ya que no hay mas posibles elementos a leer
                 if(debug){
                     Console.print(Console.ANSI_RED+"Reached final of sequence. Not gone to final transition ");
                 }
             }
-            return new SequenceDetection<T>(this,transitedSequence,sequence,StateOperationCode.NOT_REACH_FINAL_STATE_END_OF_SEQUENCE.ordinal(), true,sequence.size()+1);
+            return new SequenceData<T>(this,transitedSequence,sequence,StateOperationCode.NOT_REACH_FINAL_STATE_END_OF_SEQUENCE.ordinal(), true,sequence.size()+1);
         }else if(isFinal){//vamos al siguiente
             if(debug){
                 Console.print(Console.ANSI_YELLOW+("Reached final state but input sequence not finished "));
             }
-            return new SequenceDetection<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(), false,sequence.size()+1);
+            return new SequenceData<T>(this,transitedSequence,sequence,StateOperationCode.SUCCESS.ordinal(), false,sequence.size()+1);
         }
 
         //Buscamos la posible transicion
@@ -133,10 +133,10 @@ public class State<T> {
         if(stateFound ==null){
             if(debug){
 
-                Console.print(Console.ANSI_RED+"Not available transition. Not recognized by LexicAnalyzer FDA ");
+                Console.print(Console.ANSI_RED+"Not available transition. Not recognized by FDA ");
             }
 
-            return new SequenceDetection<T>(this,transitedSequence,sequence,StateOperationCode.NOT_TRANSITION_AVAILABLE.ordinal(),true,sequence.size());
+            return new SequenceData<T>(this,transitedSequence,sequence,StateOperationCode.NOT_TRANSITION_AVAILABLE.ordinal(),true,sequence.size());
         }
 
         return stateFound.checkTransitions(sequence,debug,transitedSequence);
