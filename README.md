@@ -2,6 +2,7 @@
 ### How to use the AFD
 How to use an AFD
 Create a new AFD in this case is of type Character so the transitions will be of characters (used in compilers for example)
+
 ```java
 AFD<Character>afd;
 afd = new AFD<>() {
@@ -31,13 +32,13 @@ Create the function (in this case is create in the main class RuleAnalyzer)
         return(Character.isDigit(character));
     }
 ```
-And add the transition to the state:
+And add the transition to the state determined by the function, the out state and read and write (boolean). Write must be used in final states
 ```java
- base.addTransitionFunction(RuleAnalyzer::isDigit, dollar);
+ base.addTransitionFunction(RuleAnalyzer::isDigit, dollar,true,true);
 ```
-If you want to make an state final just call the method `setFinal` where the parameter is the status code when reached the final node.
+If you want to make an state final just call the method `setFinal`.
 ```java
-dollar.setFinal(StateCodes.VARIABLE.ordinal());
+dollar.setFinal();
 ```
 
 Semantic actions are supported:
@@ -71,3 +72,6 @@ Where `toCharacterArray` will convert the String in a Character[]sequence which 
         return  text.chars().mapToObj(c -> (char) c).toArray(Character[]::new);
     }
 ```
+If you turn on the DEBUG you will be able to test and debug the algorithm
+![image](https://user-images.githubusercontent.com/18512841/134489000-e890d8d5-4fd8-40bb-9eab-39764ba709d2.png)
+
