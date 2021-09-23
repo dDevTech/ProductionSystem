@@ -8,7 +8,7 @@ package LexicAnalyzer.FDA;
 import java.util.List;
 import java.util.Queue;
 
-public class FinalState<T> {
+public class SequenceDetection<T> {
     private State<T> node;
     private  List<T> transitedSequence;
     private  Queue<T> remainingSequence;
@@ -17,7 +17,7 @@ public class FinalState<T> {
     private boolean endedSequence = false;
     private int sizeOfQueueWhenFinished;
 
-    public FinalState(State<T> node, List<T> transitedSequence, Queue<T>remainingSequence,int statusCode,boolean endedSequence,int sizeOfQueueWhenFinished) {
+    public SequenceDetection(State<T> node, List<T> transitedSequence, Queue<T>remainingSequence, int statusCode, boolean endedSequence, int sizeOfQueueWhenFinished) {
         this.node = node;
         this.transitedSequence = transitedSequence;
         this.remainingSequence = remainingSequence;

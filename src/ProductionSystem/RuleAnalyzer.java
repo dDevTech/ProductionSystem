@@ -11,6 +11,7 @@ import LexicAnalyzer.FDA.State;
 import LexicAnalyzer.FDA.StateOperationCode;
 import LexicAnalyzer.Tokenizer.SymbolTable;
 import LexicAnalyzer.Tokenizer.Tokenizer;
+import Tools.Console;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +22,12 @@ public class RuleAnalyzer {
     private static Tokenizer<String>tokenizer;
     private static SymbolTable variables;
     private static SymbolTable constants;
+    private static boolean debug = false;
     public static void setupAnalyzer(){
         FDA = new FDA<>() {
             @Override
             public void onReadSequence(List<Character> completeSequence, State<Character> finalNode, int statusCode) {
-                System.out.println(completeSequence+"  Status code: "+statusCode);
+
             }
 
         };
@@ -34,18 +36,18 @@ public class RuleAnalyzer {
         tokenizer = new Tokenizer<>();
 
         State<Character> base = new State<>("root");
-        base.addTransitionFunction(RuleAnalyzer::isWhiteSpace,base,false);
+        base.addTransitionFunction(RuleAnalyzer::isWhiteSpace,base,true,false);
         //Variables
         State<Character> dollar = new State<>("dollar");
         State<Character> letter1 = new State<>("letter-variable");
         State<Character> otherCharacter1 = new State<>("o.c.1");
-
-        base.addTransition('$',dollar);
-        dollar.addTransitionFunction(RuleAnalyzer::isLetter,letter1,false);
-        letter1.addTransitionFunction(RuleAnalyzer::isLetter,letter1,false);
-        letter1.addTransitionFunction(RuleAnalyzer::isDigit,letter1,false);
-        letter1.addTransitionFunction(RuleAnalyzer::isOtherCharacter,otherCharacter1,true);
         otherCharacter1.setFinal();
+        base.addTransition('$',dollar);
+        dollar.addTransitionFunction(RuleAnalyzer::isLetter,letter1,true,true);
+        letter1.addTransitionFunction(RuleAnalyzer::isLetter,letter1,true,true);
+        letter1.addTransitionFunction(RuleAnalyzer::isDigit,letter1,true,true);
+        letter1.addTransitionFunction(RuleAnalyzer::isOtherCharacter,otherCharacter1,false,false);
+
         otherCharacter1.addSemanticAction(new SemanticAction<Character>() {
             @Override
             public void onAction(List<Character> sequence, State<Character> state) {
@@ -67,12 +69,13 @@ public class RuleAnalyzer {
                 setToken(StateCodes.CONSTANT.ordinal());
             }
         });
-
-        base.addTransitionFunction(RuleAnalyzer::isLetter,letter2,false);
-        letter2.addTransitionFunction(RuleAnalyzer::isLetter,letter2,false);
-        letter2.addTransitionFunction(RuleAnalyzer::isDigit,letter2,false);
-        letter2.addTransitionFunction(RuleAnalyzer::isOtherCharacter,otherCharacter2,true);
         otherCharacter2.setFinal();
+        base.addTransitionFunction(RuleAnalyzer::isLetter,letter2,true,true);
+        letter2.addTransitionFunction(RuleAnalyzer::isLetter,letter2,true,true);
+        letter2.addTransitionFunction(RuleAnalyzer::isDigit,letter2,true,true);
+        letter2.addTransitionFunction(RuleAnalyzer::isOtherCharacter,otherCharacter2,false,false);
+
+
 
         //Consequence
         State<Character> consequence1 = new State<>("-");
@@ -139,20 +142,24 @@ public class RuleAnalyzer {
         return FDA.execute(toCharacterArray(ruleElement));//importante añadir espacio por si hayuna variable al final
     }
     public static void processRule(String rule){
-        System.out.println(rule);
+        if(debug) Console.printlnInfo("RULE",rule);
+        Console.printlnInfo("ALGORITHM","Interpreting rule");
         int[] status = interpret(rule);
         StateOperationCode op =  StateOperationCode.values()[status[0]];
 
-        System.err.println(op.toString());
+
         if(op != StateOperationCode.SUCCESS){
-            System.err.println("FAIL in position "+ status[1]+" with character '"+rule.charAt(status[1])+"'");
+            Console.printlnInfo("STATUS",Console.ANSI_RED+"FAIL in position "+ status[1]+" with character '"+rule.charAt(status[1])+"'");
+        }else{
+            Console.printlnInfo("STATUS",Console.ANSI_YELLOW+op);
         }
-        System.out.println(variables);
-        System.out.println(constants);
-        System.out.println(tokenizer.toString());
+        Console.printlnInfo("VARIABLE",variables.toString());
+        Console.printlnInfo("CONSTANTS",constants.toString());
+        Console.printlnInfo("TOKENS",tokenizer.toString());
     }
     public static void setDebug(boolean debug){
         FDA.setDebug(debug);
+        RuleAnalyzer.debug = debug;
     }
     private static void setToken(int value){
         tokenizer.addToken(value,null);

@@ -8,9 +8,14 @@ import java.util.function.Function;
 
 public class TransitionFunction<T>{
     private Function<T,Boolean>transition;
-    private boolean ignore = false;//only change state or also remove from queue and add to current(if ignore = false;)
-    public TransitionFunction(boolean ignore,Function<T,Boolean>transition){
-        this.ignore = ignore;
+    //only change state or also remove from queue and add to current(if ignore = false;)
+    private boolean read;
+    private boolean write;
+
+    public TransitionFunction(Function<T,Boolean>transition,boolean read,boolean write){
+        this.read = read;
+        this.write = write;
+
         this.transition = transition;
     }
 
@@ -22,11 +27,20 @@ public class TransitionFunction<T>{
         this.transition = transition;
     }
 
-    public boolean isIgnore() {
-        return ignore;
+
+    public boolean isWrite() {
+        return write;
     }
 
-    public void setIgnore(boolean ignore) {
-        this.ignore = ignore;
+    public void setWrite(boolean write) {
+        this.write = write;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }

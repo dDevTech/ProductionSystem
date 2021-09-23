@@ -31,11 +31,11 @@ public class AFDTest {
 
         root.addTransition('$', stateDollar);
 
-        stateDollar.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,false);
-        stateDollar.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,false);
+        stateDollar.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,true,true);
+        stateDollar.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,true,true);
 
-        stateLetterNumeric.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,false);
-        stateLetterNumeric.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,false);
+        stateLetterNumeric.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,true,true);
+        stateLetterNumeric.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,true,true);
 
         stateLetterNumeric.addTransition('\\' , stateDelimiter);
         stateDelimiter.setFinal();

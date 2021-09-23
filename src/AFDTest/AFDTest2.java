@@ -40,11 +40,11 @@ public class AFDTest2 {
         root.addTransition(':', stateAssign1);
         stateAssign1.addTransition('=', stateAssign2);
 
-        root.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,false);
+        root.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,true,true);
 
 
-        stateLetterNumeric.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,false);
-        stateLetterNumeric.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,false);
+        stateLetterNumeric.addTransitionFunction(AFDTest::isDigit, stateLetterNumeric,true,true);
+        stateLetterNumeric.addTransitionFunction(AFDTest::isLetter, stateLetterNumeric,true,true);
 
         stateLetterNumeric.addTransition('\\' , stateDelimiter);
         stateDelimiter.setFinal();

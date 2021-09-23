@@ -5,6 +5,8 @@
 package LexicAnalyzer.FDA;
 
 
+import Tools.Console;
+
 import java.util.*;
 
 /**
@@ -20,13 +22,14 @@ public abstract class FDA<T> {
         if(root == null){
             throw new RuntimeException("Root mustn't be null");
         }
-        FinalState<T> finalState = root.checkTransitions(sequence,debug, new ArrayList<>());
-        onReadSequence(finalState.getSequence(), finalState.getNode(), finalState.getStatusCode());
-        if(!finalState.isEndedSequence()&& finalState.getStatusCode()==StateOperationCode.SUCCESS.ordinal()){
-            return checkSequence(finalState.getRemainingSequence());
+        SequenceDetection<T> sequenceDetection = root.checkTransitions(sequence,debug, new ArrayList<>());
+        Console.print(Console.ANSI_CYAN+sequenceDetection.getSequence().toString()+"\n");
+        onReadSequence(sequenceDetection.getSequence(), sequenceDetection.getNode(), sequenceDetection.getStatusCode());
+        if(!sequenceDetection.isEndedSequence()&& sequenceDetection.getStatusCode()==StateOperationCode.SUCCESS.ordinal()){
+            return checkSequence(sequenceDetection.getRemainingSequence());
         }
-
-        return new int[]{finalState.getStatusCode(),finalState.getSizeOfQueueWhenFinished()};
+        Console.printlnInfo("FDA",Console.ANSI_PURPLE+"STATUS CODE: "+sequenceDetection.getStatusCode());
+        return new int[]{sequenceDetection.getStatusCode(), sequenceDetection.getSizeOfQueueWhenFinished()};
     }
 
     /**
